@@ -22,7 +22,7 @@ gulp.task('styles', function() {
 
 gulp.task('scripts', function() {
   return gulp.src('assets/javascripts/**/*.js')
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('dist'))
     .pipe(browserSync.reload({
       stream: true
