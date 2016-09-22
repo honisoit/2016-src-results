@@ -119,7 +119,6 @@ var presSummaryInit = function presSummaryInit() {
 
 // Update the pres summary with data
 var presSummaryUpdate = function presSummaryUpdate() {
-  console.log('President summary update.');
   var presSummaryWidth = $('.js-content-results').width();
   var presMantleMultiplier = parseInt(constants.presMantlePercentage) / 100;
 
@@ -254,14 +253,13 @@ var honiSummaryUpdate = function honiSummaryUpdate() {
  * updates (the blog feature)
  */
 var updatesUpdate = function updateUpdates() {
-  console.log('Updates update.');
   var entries = d3.select('.js-updates-entries');
 
-  // Remove the existing content of the blog
+  // Remove the existing content of the blogs
   entries.html('');
 
   var entry = entries.selectAll('article')
-    .data(updatesData)
+    .data(updatesData.reverse())
     .enter()
     .append('article')
     .classed('updates__entry', true);
