@@ -247,7 +247,7 @@ var honiSummaryInit = function honiSummaryInit(data) {
 //};
 
 var honiSummaryUpdate = function honiSummaryUpdate() {
-  console.log('Honi Summary update.');
+  //console.log('Honi Summary update.');
 }
 /**
  * updates (the blog feature)

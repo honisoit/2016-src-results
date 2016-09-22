@@ -23,6 +23,7 @@
   margin-top: $baseline;
 }
 
+.honi__patience,
 .honi__breakdown-title {
   @include section-title;
 }
@@ -32,5 +33,5 @@
   margin-top: $baseline;
   border-top: 1px solid $brand-grey;
   margin-top: $baseline;
-  padding-top: $baseline/2; 
+  padding-top: $baseline/2;
 }
