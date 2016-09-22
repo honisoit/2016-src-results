@@ -9,7 +9,17 @@ var sheetURL = 'https://docs.google.com/spreadsheets/d/1YrPVj8O8ZrZaByz8wMhS56N8
 var rawData = {};
 var constants = {presMantlePercentage: "50%", presBrookPercentage: "50%"};
 var updatesData = {};
-var presData = {};
+var presData = [{"booth":"Pre-poll","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"JFR","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Fisher","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Manning","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Cumberland","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Engineering","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"SCA","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"The Con","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Declaration","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Postal","brook":null,"brookPercentage":"-","mantle":null,"mantlePercentage":"-","informal":null,"informalPercentage":"-","total":0},
+{"booth":"Total","brook":0,"brookPercentage":"-","mantle":0,"mantlePercentage":"-","informal":0,"informalPercentage":"-","total":0}];
 var honiData = [{"name":"Time","primaryVote":500,"preferenceVote":-500,"finalVote":0,"colorPreferences":"#ffcc33","colorPrimary":"#ffcc33"},
 {"name":"Wet","primaryVote":600,"preferenceVote":400,"finalVote":1000,"colorPreferences":"#ffcc33","colorPrimary":"#99cccc"},
 {"name":"Sin","primaryVote":700,"preferenceVote":100,"finalVote":800,"colorPreferences":"#ffcc33","colorPrimary":"#cc99ff"},
@@ -310,6 +320,7 @@ $(window).resize(function() {
 var init = function init() {
   tabsInit();
   presSummaryInit();
+  presTableUpdate();
   honiSummaryInit();
   tabletopInit();
 };
