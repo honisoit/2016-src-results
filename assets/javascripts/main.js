@@ -153,9 +153,9 @@ var presSummaryUpdate = function presSummaryUpdate() {
 var presTableUpdate = function presTableUpdate() {
   var wipeTableContents = d3.select('.js-pres-table').html('');
 
-  var table = d3.select('.js-pres-table').append('table');
+  var table = d3.select('.js-pres-table').append('table').classed('table', true);
 
-  var tableHeader = table.append('tr')
+  var tableHeader = table.append('tr').classed('table__header', true)
     .selectAll('td')
     .data(["Booth", "Brook", "%", "Mantle", "%", "Informal", "%", "Total"]).enter()
     .append('td')
@@ -165,7 +165,8 @@ var presTableUpdate = function presTableUpdate() {
 
   var tableRows = table.selectAll('tr')
     .data(presData).enter()
-    .append('tr');
+    .append('tr')
+    .classed('table__row', true);
 
   var tableCells = tableRows.selectAll('td')
     .data(function(d) {
