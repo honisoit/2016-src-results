@@ -95,9 +95,11 @@ a {
   background-color: $brand-grey-light;
   }
   td {
-    padding: 0 $baseline/2 0 $baseline/2;
+    padding: 0 $baseline/4 0 $baseline/4;
   }
   font-family: $font-family-sans-serif;
+  font-size: $fontsize0;
+  width: 100%; 
 }
 
 .table__header {
