@@ -89,3 +89,18 @@ a {
     margin-top: 0;
   }
 }
+
+.table {
+  tr:nth-child(even) {
+  background-color: $brand-grey-light;
+  }
+  td {
+    padding: 0 $baseline/2 0 $baseline/2;
+  }
+  font-family: $font-family-sans-serif;
+}
+
+.table__header {
+  font-weight: bold;
+
+}

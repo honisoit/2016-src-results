@@ -18,7 +18,7 @@
 
 .pres__candidate-copy--left {
   text-align: left;
-  @media (min-width:580px) {
+  @media (min-width:1068px) {
     width: 50%;
     float: right;
   }
@@ -26,7 +26,7 @@
 
 .pres__candidate-copy--right {
   text-align: right;
-  @media (min-width:580px) {
+  @media (min-width:1068px) {
     width: 50%;
     float: left;
   }
@@ -39,7 +39,7 @@
   font-size: $fontsize2;
   font-family: $font-family-sans-serif;
   margin-top: $baseline;
-  @media (min-width:580px) { // weird breakpoint to stop floating pres pics
+  @media (min-width:1068px) { // weird breakpoint to stop floating pres pics
     margin: 5rem 0 0 0;
     padding: 0;
   }
@@ -60,6 +60,7 @@
   height: auto;
   width: 50%;
   float: left;
+  bottom: 0;
 }
 
 .pres__photo-wrapper--left {
@@ -106,4 +107,7 @@
 
 .pres__footnotes {
   @include small-text;
+  border-top: 1px solid $brand-grey;
+  margin-top: $baseline;
+  padding-top: $baseline/2;
 }

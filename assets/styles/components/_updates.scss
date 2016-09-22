@@ -2,7 +2,7 @@
   @media (min-width: $medium) {
     border: 1px solid $brand-grey;
     padding: $baseline;
-    max-height: 80vh;
+    height: 100%;
   }
 }
 
@@ -14,7 +14,7 @@
 .updates__entries-container {
   @media (min-width: $medium) {
     overflow-y: scroll;
-    height: 68vh;
+    height: 100%;
   }
 }
 
@@ -51,4 +51,8 @@
   p {
     margin-top: $baseline;
   }
+}
+
+.twitter-tweet {
+  font-family: $font-family-sans-serif;
 }

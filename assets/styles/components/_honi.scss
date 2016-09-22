@@ -30,4 +30,7 @@
 .honi__footnotes {
   @include small-text;
   margin-top: $baseline;
+  border-top: 1px solid $brand-grey;
+  margin-top: $baseline;
+  padding-top: $baseline/2; 
 }
