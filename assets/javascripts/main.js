@@ -148,20 +148,31 @@ var presSummaryUpdate = function presSummaryUpdate() {
 };
 
 /**
- * President table
+ * President tables
  */
 var presTableUpdate = function presTableUpdate() {
+  var wipeTableContents = d3.select('.js-pres-table').html('');
+
   var table = d3.select('.js-pres-table').append('table');
+
+  var tableHeader = table.append('tr')
+    .selectAll('td')
+    .data(["Booth", "Brook", "%", "Mantle", "%", "Informal", "%", "Total"]).enter()
+    .append('td')
+    .text(function(d) {
+      return d;
+    });
 
   var tableRows = table.selectAll('tr')
     .data(presData).enter()
     .append('tr');
 
   var tableCells = tableRows.selectAll('td')
-    //.data()
-    //.enter()
+    .data(function(d) {
+      return d3.values(d);
+    }).enter()
     .append('td')
-    .text(function(d) { return d; })
+    .text(function(d) { return d; });
 
 };
 
