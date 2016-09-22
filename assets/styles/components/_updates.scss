@@ -2,6 +2,7 @@
   @media (min-width: $medium) {
     border: 1px solid $brand-grey;
     padding: $baseline;
+    max-height: 80vh;
   }
 }
 
@@ -11,11 +12,13 @@
 }
 
 .updates__entries-container {
-  overflow-y: scroll;
+  @media (min-width: $medium) {
+    overflow-y: scroll;
+    height: 68vh;
+  }
 }
 
 .updates__entries {
-  height: 400px;
 }
 
 .updates__entry {
