@@ -89,7 +89,7 @@ var presSummaryInit = function presSummaryInit() {
   presSummarySegmentTwo
     .attr('x', presMantleMultiplier * presSummaryWidth)
     .attr('y', 0)
-    .attr('width', (100 - presMantleMultiplier) * presSummaryWidth)
+    .attr('width', presMantleMultiplier * presSummaryWidth)
     .attr('height', presSummaryHeight)
     .style('fill', '#753da6');
 
@@ -121,20 +121,19 @@ var presSummaryInit = function presSummaryInit() {
 var presSummaryUpdate = function presSummaryUpdate() {
   console.log('President summary update.');
   var presSummaryWidth = $('.js-content-results').width();
-  var computedMantleMultiplier = parseInt(constants.presMantlePercentage)/100;
-  var computedBrookMultiplier = 100 - computedMantleMultiplier;
+  var presMantleMultiplier = parseInt(constants.presMantlePercentage) / 100;
 
   presSummary
     .attr('width', presSummaryWidth);
 
   presSummarySegmentOne
     .transition()
-    .attr('width', presSummaryWidth * computedMantleMultiplier);
+    .attr('width', presSummaryWidth * presMantleMultiplier);
 
   presSummarySegmentTwo
     .transition()
-    .attr('x', presSummaryWidth * computedMantleMultiplier)
-    .attr('width', presSummaryWidth * computedBrookMultiplier);
+    .attr('x', presSummaryWidth * presMantleMultiplier)
+    .attr('width', (1 - presMantleMultiplier) * presSummaryWidth);
 
   presSummaryMidline
     .attr('x1', presSummaryWidth/2)
@@ -149,20 +148,32 @@ var presSummaryUpdate = function presSummaryUpdate() {
 };
 
 /**
- * President table
+ * President tables
  */
 var presTableUpdate = function presTableUpdate() {
-  var table = d3.select('.js-pres-table').append('table');
+  var wipeTableContents = d3.select('.js-pres-table').html('');
+
+  var table = d3.select('.js-pres-table').append('table').classed('table', true);
+
+  var tableHeader = table.append('tr').classed('table__header', true)
+    .selectAll('td')
+    .data(["Booth", "Brook", "%", "Mantle", "%", "Informal", "%", "Total"]).enter()
+    .append('td')
+    .text(function(d) {
+      return d;
+    });
 
   var tableRows = table.selectAll('tr')
     .data(presData).enter()
-    .append('tr');
+    .append('tr')
+    .classed('table__row', true);
 
   var tableCells = tableRows.selectAll('td')
-    //.data()
-    //.enter()
+    .data(function(d) {
+      return d3.values(d);
+    }).enter()
     .append('td')
-    .text(function(d) { return d; })
+    .text(function(d) { return d; });
 
 };
 
