@@ -3,6 +3,10 @@ html {
   line-height: $lineheight;
 }
 
+img {
+  width: 100%;
+}
+
 body {
   font-family: $font-family-serif;
 }
@@ -50,9 +54,13 @@ a {
   //@include outer-container();
   box-sizing: border-box;
   max-width: 100%;
+  min-width: 100%;
+  //display: block;
+  overflow: hidden;
   @media (min-width:$medium) {
-    display: flex;
+    //display: flex;
     margin: 0 -$baseline/2;
+    margin-bottom: $baseline;
   }
 }
 
@@ -60,8 +68,11 @@ a {
   //@include md-columns(6);
   box-sizing: border-box;
   @media (min-width:$medium) {
-    flex: 0 1 50%;
+    //flex: 0 1 50%;
+    float:left;
+    width: 49%;
     margin-right: $baseline/2;
+    display: block;
   }
 }
 
@@ -70,7 +81,10 @@ a {
   margin-top: $baseline;
   box-sizing: border-box;
   @media (min-width:$medium) {
-    flex: 0 1 50%;
+    //flex: 0 1 50%;
+    float: right;
+    width: 49%;
+    display: block;
     margin-left: $baseline/2;
     margin-top: 0;
   }

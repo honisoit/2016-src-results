@@ -29,4 +29,5 @@
 
 .honi__footnotes {
   @include small-text;
+  margin-top: $baseline;
 }
