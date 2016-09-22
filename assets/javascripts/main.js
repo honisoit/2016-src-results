@@ -323,6 +323,7 @@ var init = function init() {
   presTableUpdate();
   honiSummaryInit();
   tabletopInit();
+  pymChild.sendHeight()
 };
 
 /**
