@@ -290,7 +290,7 @@ var tabsInit = function tabsInit() {
     $(this).addClass('tabs__tab--current');
     $('#'+tab_id).addClass('tabs__content--current');
 
-    // Update the height of the parent iframe
+    // Update the height of the parent iframme
     pymChild.sendHeight()
   })
 };

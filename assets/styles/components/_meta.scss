@@ -13,7 +13,11 @@
   font-family: $font-family-sans-serif;
   margin: 0;
   padding: 0;
-  font-size: $fontsize3;
+  font-size: $fontsize2;
+
+  @media(min-width: $medium) {
+    font-size: $fontsize3;
+  }
 }
 
 .meta__smalltext {
