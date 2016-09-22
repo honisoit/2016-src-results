@@ -334,6 +334,7 @@ var update = function update() {
   honiSummaryUpdate();
   updatesUpdate();
   copyUpdate();
+  pymChild.sendHeight()
 };
 
 $(document).ready(function(){
