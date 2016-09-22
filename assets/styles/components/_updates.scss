@@ -25,6 +25,9 @@
   background-color: $brand-grey-light;
   padding: $baseline/2 $baseline;
   margin: $baseline 0;
+  a {
+    @include link-underline($brand-grey-light, #000, $brand-grey-dark, #000)
+  }
 }
 
 .updates__heading {
