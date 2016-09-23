@@ -36,6 +36,7 @@ var tabletopInit = function tabletopInit() {
 var processData = function processData(data, tabletop) {
   constants = data.constants.elements['0'];
   updatesData = data.updates.elements;
+  updatesData = updatesData.reverse();
   presData = data.pres.elements;
   honiData = data.honi.elements;
 
@@ -269,7 +270,7 @@ var updatesUpdate = function updateUpdates() {
   entries.html('');
 
   var entry = entries.selectAll('article')
-    .data(updatesData.reverse())
+    .data(updatesData)
     .enter()
     .append('article')
     .classed('updates__entry', true);
