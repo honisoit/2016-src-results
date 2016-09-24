@@ -24,10 +24,13 @@ var tabletopInit = function tabletopInit() {
 };
 
 var processData = function processData(data, tabletop) {
+  rawData = data;
   constants = data.constants.elements['0'];
   updatesData = data.updates.elements;
   presData = data.pres.elements;
-  honiData = data.honi.elements;
+  honiPrimaryData = data.honiprimary.elements;
+  honiPreferenceData = data.honipreferences.elements;
+  honiTotalsData = data.honitotals.elements;
 
   update();
 };
@@ -49,8 +52,11 @@ var copyUpdate = function copyUpdate() {
 
   // Honi
   d3.select('.js-honi-turnout').text(constants.honiTurnout);
+  d3.select('.js-honi-booths').text(constants.honiBoothsCounted + '/' + constants.numberOfBooths);
   d3.select('.js-honi-standfirst').html(constants.honiStandfirst);
   d3.select('.js-honi-footnotes').html(constants.honiFootnotes);
+  d3.select('.js-honi-primary-analysis').html(constants.honiPrimaryAnalysis);
+  d3.select('.js-honi-preference-analysis').html(constants.honiPreferenceAnalysis);
 };
 
 /**
@@ -249,6 +255,97 @@ var honiSummaryInit = function honiSummaryInit(data) {
 var honiSummaryUpdate = function honiSummaryUpdate() {
   console.log('Honi Summary update.');
 }
+
+/**
+ * Honi Primary table update
+ */
+var honiPrimaryTableUpdate = function honiPrimaryTableUpdate() {
+ var wipeTableContents = d3.select('.js-honi-primary-table').html('');
+
+ var table = d3.select('.js-honi-primary-table').append('table').classed('table', true);
+
+ var tableHeader = table.append('tr').classed('table__header', true)
+   .selectAll('td')
+   .data(["Booth", "TIME", "%", "WET", "%", "SIN", "%", "Informal", "%", "Total"]).enter()
+   .append('td')
+   .text(function(d) {
+     return d;
+   });
+
+ var tableRows = table.selectAll('tr')
+   .data(honiPrimaryData).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+ var tableCells = tableRows.selectAll('td')
+   .data(function(d) {
+     return d3.values(d);
+   }).enter()
+   .append('td')
+   .text(function(d) { return d; });
+
+};
+
+/**
+ * Honi Preference table update
+ */
+var honiPreferenceTableUpdate = function honiPreferenceTableUpdate() {
+ var wipeTableContents = d3.select('.js-honi-preferences-table').html('');
+
+ var table = d3.select('.js-honi-preferences-table').append('table').classed('table', true);
+
+ var tableHeader = table.append('tr').classed('table__header', true)
+   .selectAll('td')
+   .data(["Booth", "TIME", "%", "WET", "%", "Exhausted", "%", "Total"]).enter()
+   .append('td')
+   .text(function(d) {
+     return d;
+   });
+
+ var tableRows = table.selectAll('tr')
+   .data(honiPreferenceData).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+ var tableCells = tableRows.selectAll('td')
+   .data(function(d) {
+     return d3.values(d);
+   }).enter()
+   .append('td')
+   .text(function(d) { return d; });
+
+};
+
+/**
+ * Honi Totals table update
+ */
+var honiTotalsTableUpdate = function honiTotalsTableUpdate() {
+ var wipeTableContents = d3.select('.js-honi-totals-table').html('');
+
+ var table = d3.select('.js-honi-totals-table').append('table').classed('table', true);
+
+ var tableHeader = table.append('tr').classed('table__header', true)
+   .selectAll('td')
+   .data(["Booth", "TIME", "%", "WET", "%", "Total"]).enter()
+   .append('td')
+   .text(function(d) {
+     return d;
+   });
+
+ var tableRows = table.selectAll('tr')
+   .data(honiTotalsData).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+ var tableCells = tableRows.selectAll('td')
+   .data(function(d) {
+     return d3.values(d);
+   }).enter()
+   .append('td')
+   .text(function(d) { return d; });
+
+};
+
 /**
  * updates (the blog feature)
  */
@@ -318,9 +415,17 @@ var init = function init() {
  * Update all of the things
  */
 var update = function update() {
+  // president
   presSummaryUpdate();
   presTableUpdate();
+
+  // honi
   honiSummaryUpdate();
+  honiPrimaryTableUpdate();
+  honiPreferenceTableUpdate();
+  honiTotalsTableUpdate();
+
+  // general
   updatesUpdate();
   copyUpdate();
 };
