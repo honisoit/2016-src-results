@@ -19,12 +19,27 @@
   //@include lg-columns(9);
 }
 
-.honi__summary {
+.honi__graphic {
   margin-top: $baseline;
 }
 
-.honi__breakdown-title {
+.honi__ticket-label {
+  font-family: $font-family-sans-serif;
+  font-weight: bold;
+  font-size: $fontsize2;
+}
+
+.honi__title {
   @include section-title;
+}
+
+.honi__subtitle {
+  display: block;
+  font-weight: bold;
+  font-family: $font-family-sans-serif;
+  margin: $baseline 0 $baseline/2;
+  padding: 0;
+  font-size: $fontsize2;
 }
 
 .honi__footnotes {
@@ -32,5 +47,5 @@
   margin-top: $baseline;
   border-top: 1px solid $brand-grey;
   margin-top: $baseline;
-  padding-top: $baseline/2; 
+  padding-top: $baseline/2;
 }

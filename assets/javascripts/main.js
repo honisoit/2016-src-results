@@ -227,18 +227,6 @@ var honiSummaryInit = function honiSummaryInit(data) {
       return d.colorPrimary;
     });
 
-  honiSummaryPreferenceSegment = honiSummaryTicket.append('rect')
-    .attr('height', honiSummaryRowHeight)
-    .attr('width', function(d, i) {
-      return '100';
-    })
-    .attr('transform', function(d, i) {
-      return 'translate(100, 0)';
-    })
-    .attr('fill', function(d, i) {
-      return d.colorPreferences;
-    });
-
   honiSummaryMidline
     .attr('x1', honiSummaryWidth/2)
     .attr('y1', 0)
@@ -248,13 +236,127 @@ var honiSummaryInit = function honiSummaryInit(data) {
     .attr('stroke', 'black');
 };
 
-//var honiSummaryUpdate = honiSummaryUpdate() {
-  //console.log('Updated the honi summary');
-//};
+/**
+ * Honi Primary Summary
+ */
+var honiPrimary = d3.select('.js-honi-primary').append('svg');
+var honiPrimaryMidline = honiPrimary.append('line');
+var honiPrimaryHeight = honiSummaryRowHeight * 7.6;
 
-var honiSummaryUpdate = function honiSummaryUpdate() {
-  console.log('Honi Summary update.');
-}
+var honiPrimaryInit = function honiPrimaryInit() {
+    var honiSummaryWidth = $('.js-content-results').width();
+
+    honiPrimary
+      .attr('height', honiPrimaryHeight)
+      .attr('width', honiSummaryWidth);
+
+    var honiPrimaryBlock = honiPrimary.selectAll('g')
+      .data([{
+        name: "TIME",
+        percentage: "38.43%",
+        multiplier: 0.3843,
+        hex: "#fbd75d"
+      },{
+        name: "WET",
+        percentage: "32.73%",
+        multiplier: 0.3273,
+        hex: "#6dcff6"
+      },{
+        name: "SIN",
+        percentage: "27.00%",
+        multiplier: 0.27,
+        hex: "#bd8cbf"
+      },{
+        name: "Informal",
+        percentage: "3.28%",
+        multiplier: 0.0328,
+        hex: "#b3b3aa"
+      }])
+      .enter().append('g')
+      .attr('transform', function(d, i) {
+        return 'translate(0,' + ( honiSummaryTopPad + (i) * honiSummaryRowHeight * 2) + ')';
+      });
+
+    var honiBlockLabels = honiPrimaryBlock
+      .append('text')
+      .text(function(d, i) {
+        return d.name + ' – ' + d.percentage;
+      })
+      .classed('honi__ticket-label', true);
+
+    var honiBlockSegment = honiPrimaryBlock
+      .append('rect')
+      .attr('height', honiSummaryRowHeight)
+      .attr('width', function(d,i) {
+        return d.multiplier * honiSummaryWidth;
+      })
+      .attr('transform', function() { return 'translate(0,' + honiSummaryRowSpace + ')'; })
+      .attr('fill', function(d,i) {
+        return d.hex;
+      });
+
+    honiPrimaryMidline
+      .attr('x1', honiSummaryWidth/2)
+      .attr('y1', 0)
+      .attr('x2', honiSummaryWidth/2)
+      .attr('y2', honiSummaryHeight)
+      .attr('stroke-width', 2)
+      .attr('stroke', 'black');
+};
+
+/**
+ * Honi Preference Summary
+ */
+
+var honiPreferences = d3.select('.js-honi-preferences').append('svg');
+var honiPreferencesMidline = honiPreferences.append('line');
+
+var honiPreferencesInit = function honiPreferencesInit() {
+   var honiSummaryWidth = $('.js-content-results').width();
+
+   honiPreferences
+     .attr('height', honiSummaryRowHeight * 4)
+     .attr('width', honiSummaryWidth);
+
+   var honiPreferencesBlock = honiPreferences.selectAll('g')
+     .data([{
+       name: "WET",
+       percentage: "53.97%",
+       multiplier: 0.5397,
+       hex: "#6dcff6"
+     },{
+       name: "TIME",
+       percentage: "46.03%",
+       multiplier: 0.4603,
+       hex: "#fbd75d"
+     }])
+     .enter().append('g')
+     .attr('transform', function(d, i) {
+       return 'translate(0,' + ( honiSummaryTopPad + (i) * honiSummaryRowHeight * 2) + ')';
+     });
+
+   var honiBlockLabels = honiPreferencesBlock
+     .append('text')
+     .text(function(d, i) {
+       return d.name + ' – ' + d.percentage;
+     })
+     .classed('honi__ticket-label', true);
+
+   var honiBlockSegment = honiPreferencesBlock
+     .append('rect')
+     .attr('height', honiSummaryRowHeight)
+     .attr('width', function(d,i) { return d.multiplier * honiSummaryWidth; })
+     .attr('transform', function() { return 'translate(0,' + honiSummaryRowSpace + ')'; })
+     .attr('fill', function(d,i) { return d.hex; });
+
+   honiPreferencesMidline
+     .attr('x1', honiSummaryWidth/2)
+     .attr('y1', 0)
+     .attr('x2', honiSummaryWidth/2)
+     .attr('y2', honiSummaryHeight)
+     .attr('stroke-width', 2)
+     .attr('stroke', 'black');
+};
 
 /**
  * Honi Primary table update
@@ -407,7 +509,8 @@ $(window).resize(function() {
 var init = function init() {
   tabsInit();
   presSummaryInit();
-  honiSummaryInit();
+  honiPrimaryInit();
+  honiPreferencesInit();
   tabletopInit();
 };
 
@@ -420,7 +523,7 @@ var update = function update() {
   presTableUpdate();
 
   // honi
-  honiSummaryUpdate();
+
   honiPrimaryTableUpdate();
   honiPreferenceTableUpdate();
   honiTotalsTableUpdate();
