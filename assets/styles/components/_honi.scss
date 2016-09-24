@@ -42,6 +42,9 @@
   font-size: $fontsize2;
 }
 
+.honi__table {
+  overflow-x: scroll;
+}
 .honi__footnotes {
   @include small-text;
   margin-top: $baseline;
