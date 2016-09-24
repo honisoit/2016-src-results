@@ -34,11 +34,14 @@ var tabletopInit = function tabletopInit() {
 };
 
 var processData = function processData(data, tabletop) {
+  rawData = data;
   constants = data.constants.elements['0'];
   updatesData = data.updates.elements;
   updatesData = updatesData.reverse();
   presData = data.pres.elements;
-  honiData = data.honi.elements;
+  honiPrimaryData = data.honiprimary.elements;
+  honiPreferenceData = data.honipreferences.elements;
+  honiTotalsData = data.honitotals.elements;
 
   update();
 };
@@ -60,8 +63,11 @@ var copyUpdate = function copyUpdate() {
 
   // Honi
   d3.select('.js-honi-turnout').text(constants.honiTurnout);
+  d3.select('.js-honi-booths').text(constants.honiBoothsCounted + '/' + constants.numberOfBooths);
   d3.select('.js-honi-standfirst').html(constants.honiStandfirst);
   d3.select('.js-honi-footnotes').html(constants.honiFootnotes);
+  d3.select('.js-honi-primary-analysis').html(constants.honiPrimaryAnalysis);
+  d3.select('.js-honi-preference-analysis').html(constants.honiPreferenceAnalysis);
 };
 
 /**
@@ -188,7 +194,7 @@ var presTableUpdate = function presTableUpdate() {
 };
 
 /**
- * Honi Summary
+ * Honi Summary setup
  */
 var honiSummaryNumberOfTickets = 4;
 var honiSummaryRowHeight = 30;
@@ -197,69 +203,218 @@ var honiSummaryTopPad = 14;
 var honiSummaryHeight = (honiSummaryNumberOfTickets * honiSummaryRowHeight * 2) + ((honiSummaryNumberOfTickets - 1) * honiSummaryRowSpace) + honiSummaryTopPad;
 var honiSummaryWidth = $('.js-honi-summary').width();
 
-// Set up the summary elements
-var honiSummary = d3.select('.js-honi-summary').append('svg');
-var honiSummaryMidline = honiSummary.append('line');
+/**
+ * Honi Primary Summary
+ */
+var honiPrimary = d3.select('.js-honi-primary').append('svg');
+var honiPrimaryMidline = honiPrimary.append('line');
+var honiPrimaryHeight = honiSummaryRowHeight * 7.6;
 
-var honiSummaryInit = function honiSummaryInit(data) {
-  var honiSummaryWidth = $('.js-content-results').width();
+var honiPrimaryInit = function honiPrimaryInit() {
+    var honiSummaryWidth = $('.js-content-results').width();
 
-  honiSummary
-    .attr('height', honiSummaryHeight)
-    .attr('width', honiSummaryWidth);
+    honiPrimary
+      .attr('height', honiPrimaryHeight)
+      .attr('width', honiSummaryWidth);
 
-  honiSummaryTicket = honiSummary.selectAll('g')
-    .data(honiData)
-    .enter().append('g')
-    .attr('transform', function(d, i) {
-      return 'translate(0,' + ( honiSummaryTopPad + (i) * honiSummaryRowHeight * 2) + ')';
-    })
+    var honiPrimaryBlock = honiPrimary.selectAll('g')
+      .data([{
+        name: "TIME",
+        percentage: "38.43%",
+        multiplier: 0.3843,
+        hex: "#fbd75d"
+      },{
+        name: "WET",
+        percentage: "32.73%",
+        multiplier: 0.3273,
+        hex: "#6dcff6"
+      },{
+        name: "SIN",
+        percentage: "27.00%",
+        multiplier: 0.27,
+        hex: "#bd8cbf"
+      },{
+        name: "Informal",
+        percentage: "3.28%",
+        multiplier: 0.0328,
+        hex: "#b3b3aa"
+      }])
+      .enter().append('g')
+      .attr('transform', function(d, i) {
+        return 'translate(0,' + ( honiSummaryTopPad + (i) * honiSummaryRowHeight * 2) + ')';
+      });
 
-  honiSummaryLabels = honiSummaryTicket
-    .append('text')
-    .text(function(d, i) {
-      return d.name + ' – ' + d.finalVote;
-    })
-    .classed('honi__ticket-label', true);
+    var honiBlockLabels = honiPrimaryBlock
+      .append('text')
+      .text(function(d, i) {
+        return d.name + ' – ' + d.percentage;
+      })
+      .classed('honi__ticket-label', true);
 
-  honiSummaryPrimarySegment = honiSummaryTicket.append('rect')
-    .attr('height', honiSummaryRowHeight)
-    .attr('width', function(d,i) {
-      return parseInt(d.primaryPercentage) * honiSummaryWidth;
-    })
-    //.attr('transform', 'translate(0,' + honiSummaryRowSpace + ')')
-    .attr('fill', function(d,i) {
-      return d.colorPrimary;
-    });
+    var honiBlockSegment = honiPrimaryBlock
+      .append('rect')
+      .attr('height', honiSummaryRowHeight)
+      .attr('width', function(d,i) {
+        return d.multiplier * honiSummaryWidth;
+      })
+      .attr('transform', function() { return 'translate(0,' + honiSummaryRowSpace + ')'; })
+      .attr('fill', function(d,i) {
+        return d.hex;
+      });
 
-  honiSummaryPreferenceSegment = honiSummaryTicket.append('rect')
-    .attr('height', honiSummaryRowHeight)
-    .attr('width', function(d, i) {
-      return '100';
-    })
-    .attr('transform', function(d, i) {
-      return 'translate(100, 0)';
-    })
-    .attr('fill', function(d, i) {
-      return d.colorPreferences;
-    });
-
-  honiSummaryMidline
-    .attr('x1', honiSummaryWidth/2)
-    .attr('y1', 0)
-    .attr('x2', honiSummaryWidth/2)
-    .attr('y2', honiSummaryHeight)
-    .attr('stroke-width', 2)
-    .attr('stroke', 'black');
+    honiPrimaryMidline
+      .attr('x1', honiSummaryWidth/2)
+      .attr('y1', 0)
+      .attr('x2', honiSummaryWidth/2)
+      .attr('y2', honiSummaryHeight)
+      .attr('stroke-width', 2)
+      .attr('stroke', 'black');
 };
 
-//var honiSummaryUpdate = honiSummaryUpdate() {
-  //console.log('Updated the honi summary');
-//};
+/**
+ * Honi Preference Summary
+ */
 
-var honiSummaryUpdate = function honiSummaryUpdate() {
-  //console.log('Honi Summary update.');
-}
+var honiPreferences = d3.select('.js-honi-preferences').append('svg');
+var honiPreferencesMidline = honiPreferences.append('line');
+
+var honiPreferencesInit = function honiPreferencesInit() {
+   var honiSummaryWidth = $('.js-content-results').width();
+
+   honiPreferences
+     .attr('height', honiSummaryRowHeight * 4)
+     .attr('width', honiSummaryWidth);
+
+   var honiPreferencesBlock = honiPreferences.selectAll('g')
+     .data([{
+       name: "WET",
+       percentage: "53.97%",
+       multiplier: 0.5397,
+       hex: "#6dcff6"
+     },{
+       name: "TIME",
+       percentage: "46.03%",
+       multiplier: 0.4603,
+       hex: "#fbd75d"
+     }])
+     .enter().append('g')
+     .attr('transform', function(d, i) {
+       return 'translate(0,' + ( honiSummaryTopPad + (i) * honiSummaryRowHeight * 2) + ')';
+     });
+
+   var honiBlockLabels = honiPreferencesBlock
+     .append('text')
+     .text(function(d, i) {
+       return d.name + ' – ' + d.percentage;
+     })
+     .classed('honi__ticket-label', true);
+
+   var honiBlockSegment = honiPreferencesBlock
+     .append('rect')
+     .attr('height', honiSummaryRowHeight)
+     .attr('width', function(d,i) { return d.multiplier * honiSummaryWidth; })
+     .attr('transform', function() { return 'translate(0,' + honiSummaryRowSpace + ')'; })
+     .attr('fill', function(d,i) { return d.hex; });
+
+   honiPreferencesMidline
+     .attr('x1', honiSummaryWidth/2)
+     .attr('y1', 0)
+     .attr('x2', honiSummaryWidth/2)
+     .attr('y2', honiSummaryHeight)
+     .attr('stroke-width', 2)
+     .attr('stroke', 'black');
+};
+
+/**
+ * Honi Primary table update
+ */
+var honiPrimaryTableUpdate = function honiPrimaryTableUpdate() {
+ var wipeTableContents = d3.select('.js-honi-primary-table').html('');
+
+ var table = d3.select('.js-honi-primary-table').append('table').classed('table', true);
+
+ var tableHeader = table.append('tr').classed('table__header', true)
+   .selectAll('td')
+   .data(["Booth", "TIME", "%", "WET", "%", "SIN", "%", "Informal", "%", "Total"]).enter()
+   .append('td')
+   .text(function(d) {
+     return d;
+   });
+
+ var tableRows = table.selectAll('tr')
+   .data(honiPrimaryData).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+ var tableCells = tableRows.selectAll('td')
+   .data(function(d) {
+     return d3.values(d);
+   }).enter()
+   .append('td')
+   .text(function(d) { return d; });
+
+};
+
+/**
+ * Honi Preference table update
+ */
+var honiPreferenceTableUpdate = function honiPreferenceTableUpdate() {
+ var wipeTableContents = d3.select('.js-honi-preferences-table').html('');
+
+ var table = d3.select('.js-honi-preferences-table').append('table').classed('table', true);
+
+ var tableHeader = table.append('tr').classed('table__header', true)
+   .selectAll('td')
+   .data(["Booth", "TIME", "%", "WET", "%", "Exhausted", "%", "Total"]).enter()
+   .append('td')
+   .text(function(d) {
+     return d;
+   });
+
+ var tableRows = table.selectAll('tr')
+   .data(honiPreferenceData).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+ var tableCells = tableRows.selectAll('td')
+   .data(function(d) {
+     return d3.values(d);
+   }).enter()
+   .append('td')
+   .text(function(d) { return d; });
+
+};
+
+/**
+ * Honi Totals table update
+ */
+var honiTotalsTableUpdate = function honiTotalsTableUpdate() {
+ var wipeTableContents = d3.select('.js-honi-totals-table').html('');
+
+ var table = d3.select('.js-honi-totals-table').append('table').classed('table', true);
+
+ var tableHeader = table.append('tr').classed('table__header', true)
+   .selectAll('td')
+   .data(["Booth", "TIME", "%", "WET", "%", "Total"]).enter()
+   .append('td')
+   .text(function(d) {
+     return d;
+   });
+
+ var tableRows = table.selectAll('tr')
+   .data(honiTotalsData).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+ var tableCells = tableRows.selectAll('td')
+   .data(function(d) {
+     return d3.values(d);
+   }).enter()
+   .append('td')
+   .text(function(d) { return d; });
+
+};
+
 /**
  * updates (the blog feature)
  */
@@ -322,7 +477,8 @@ var init = function init() {
   tabsInit();
   presSummaryInit();
   presTableUpdate();
-  honiSummaryInit();
+  honiPrimaryInit();
+  honiPreferencesInit();
   tabletopInit();
   pymChild.sendHeight()
 };
@@ -331,9 +487,17 @@ var init = function init() {
  * Update all of the things
  */
 var update = function update() {
+  // president
   presSummaryUpdate();
   presTableUpdate();
-  honiSummaryUpdate();
+
+  // honi
+
+  honiPrimaryTableUpdate();
+  honiPreferenceTableUpdate();
+  honiTotalsTableUpdate();
+
+  // general
   updatesUpdate();
   copyUpdate();
   pymChild.sendHeight()
