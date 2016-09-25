@@ -1,0 +1,46 @@
+.council__analysis {
+  margin-top: $baseline;
+  //@include outer-container();
+  display: flex;
+}
+
+.council__meta {
+  flex: 1 1 25%;
+  //@include md-columns(6);
+  //@include lg-columns(3);
+}
+
+.council__standfirst {
+  flex: 1 1 75%;
+  //@include md-columns(6);
+  //@include lg-columns(9);
+}
+
+.council__graphic,
+.council__table {
+  margin-top: $baseline;
+}
+
+.council__title {
+  @include section-title;
+}
+
+.council__subtitle {
+//  display: block;
+//  font-weight: bold;
+//  font-family: $font-family-sans-serif;
+  margin: $baseline 0 $baseline;
+//  padding: 0;
+//  font-size: $fontsize2;
+}
+
+.council__table {
+  overflow-x: scroll;
+}
+.council__footnotes {
+  @include small-text;
+  margin-top: $baseline;
+  border-top: 1px solid $brand-grey;
+  margin-top: $baseline;
+  padding-top: $baseline/2;
+}
