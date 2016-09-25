@@ -52,6 +52,16 @@ var processData = function processData(data, tabletop) {
       return false;
     };
   });
+  councilTableData = councilData.slice().map(function(candidate) {
+    var rebuiltCandidate = {};
+    rebuiltCandidate['Position'] = candidate.Position;
+    rebuiltCandidate['name'] = candidate.name;
+    rebuiltCandidate['ticket'] = candidate.ticket;
+    rebuiltCandidate['faction'] = candidate.faction;
+    rebuiltCandidate['primaryVote'] = candidate.primaryVote;
+    rebuiltCandidate['currentVote'] = candidate.currentVote;
+    return rebuiltCandidate;
+  });
 
   update();
 };
@@ -546,8 +556,7 @@ var councilTableUpdate = function councilTableUpdate(data) {
      return d;
    })
    .on('click', function(d) {
-     console.log(d);
-     sortedCouncilData = councilData.sort(function(a, b){
+     sortedCouncilData = councilTableData.sort(function(a, b){
         var stringHeaders = ["name", "ticket", "faction"];
         if (stringHeaders.indexOf(d) != -1) {
           // Sort with the alphabet
@@ -687,7 +696,7 @@ var update = function update() {
   honiTotalsTableUpdate();
 
   // council
-  councilTableUpdate(councilData);
+  councilTableUpdate(councilTableData);
   councilSummaryUpdate();
 
   // general
