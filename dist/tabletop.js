@@ -1,1 +1,568 @@
-!function(){"use strict";var e=!1;if("undefined"!=typeof process&&!process.browser){e=!0;var t=require("request".trim())}var s=!1,n=!1;try{var i=new XMLHttpRequest;"undefined"!=typeof i.withCredentials?s=!0:"XDomainRequest"in window&&(s=!0,n=!0)}catch(e){}var o=Array.prototype.indexOf,a=function(e,t){var s=0,n=e.length;if(o&&e.indexOf===o)return e.indexOf(t);for(;s<n;s++)if(e[s]===t)return s;return-1},h=function(t){return this&&this instanceof h?("string"==typeof t&&(t={key:t}),this.callback=t.callback,this.wanted=t.wanted||[],this.key=t.key,this.simpleSheet=!!t.simpleSheet,this.parseNumbers=!!t.parseNumbers,this.wait=!!t.wait,this.reverse=!!t.reverse,this.postProcess=t.postProcess,this.debug=!!t.debug,this.query=t.query||"",this.orderby=t.orderby,this.endpoint=t.endpoint||"https://spreadsheets.google.com",this.singleton=!!t.singleton,this.simple_url=!!t.simple_url,this.callbackContext=t.callbackContext,this.prettyColumnNames="undefined"==typeof t.prettyColumnNames?!t.proxy:t.prettyColumnNames,"undefined"!=typeof t.proxy&&(this.endpoint=t.proxy.replace(/\/$/,""),this.simple_url=!0,this.singleton=!0,s=!1),this.parameterize=t.parameterize||!1,this.singleton&&("undefined"!=typeof h.singleton&&this.log("WARNING! Tabletop singleton already defined"),h.singleton=this),/key=/.test(this.key)&&(this.log("You passed an old Google Docs url as the key! Attempting to parse."),this.key=this.key.match("key=(.*?)(&|#|$)")[1]),/pubhtml/.test(this.key)&&(this.log("You passed a new Google Spreadsheets url as the key! Attempting to parse."),this.key=this.key.match("d\\/(.*?)\\/pubhtml")[1]),this.key?(this.log("Initializing with key "+this.key),this.models={},this.model_names=[],this.base_json_path="/feeds/worksheets/"+this.key+"/public/basic?alt=",e||s?this.base_json_path+="json":this.base_json_path+="json-in-script",void(this.wait||this.fetch())):void this.log("You need to pass Tabletop a key!")):new h(t)};h.callbacks={},h.init=function(e){return new h(e)},h.sheets=function(){this.log("Times have changed! You'll want to use var tabletop = Tabletop.init(...); tabletop.sheets(...); instead of Tabletop.sheets(...)")},h.prototype={fetch:function(e){"undefined"!=typeof e&&(this.callback=e),this.requestData(this.base_json_path,this.loadSheets)},requestData:function(t,i){if(e)this.serverSideFetch(t,i);else{var o=this.endpoint.split("//").shift()||"http";!s||n&&o!==location.protocol?this.injectScript(t,i):this.xhrFetch(t,i)}},xhrFetch:function(e,t){var s=n?new XDomainRequest:new XMLHttpRequest;s.open("GET",this.endpoint+e);var i=this;s.onload=function(){try{var e=JSON.parse(s.responseText)}catch(e){console.error(e)}t.call(i,e)},s.send()},injectScript:function(e,t){var s,n=document.createElement("script");if(this.singleton)t===this.loadSheets?s="Tabletop.singleton.loadSheets":t===this.loadSheet&&(s="Tabletop.singleton.loadSheet");else{var i=this;s="tt"+ +new Date+Math.floor(1e5*Math.random()),h.callbacks[s]=function(){var e=Array.prototype.slice.call(arguments,0);t.apply(i,e),n.parentNode.removeChild(n),delete h.callbacks[s]},s="Tabletop.callbacks."+s}var o=e+"&callback="+s;this.simple_url?e.indexOf("/list/")!==-1?n.src=this.endpoint+"/"+this.key+"-"+e.split("/")[4]:n.src=this.endpoint+"/"+this.key:n.src=this.endpoint+o,this.parameterize&&(n.src=this.parameterize+encodeURIComponent(n.src)),document.getElementsByTagName("script")[0].parentNode.appendChild(n)},serverSideFetch:function(e,s){var n=this;t({url:this.endpoint+e,json:!0},function(e,t,i){return e?console.error(e):void s.call(n,i)})},isWanted:function(e){return 0===this.wanted.length||a(this.wanted,e)!==-1},data:function(){if(0!==this.model_names.length)return this.simpleSheet?(this.model_names.length>1&&this.debug&&this.log("WARNING You have more than one sheet but are using simple sheet mode! Don't blame me when something goes wrong."),this.models[this.model_names[0]].all()):this.models},addWanted:function(e){a(this.wanted,e)===-1&&this.wanted.push(e)},loadSheets:function(t){var n,i,o=[];for(this.googleSheetName=t.feed.title.$t,this.foundSheetNames=[],n=0,i=t.feed.entry.length;n<i;n++)if(this.foundSheetNames.push(t.feed.entry[n].title.$t),this.isWanted(t.feed.entry[n].content.$t)){var a=t.feed.entry[n].link.length-1,h=t.feed.entry[n].link[a].href.split("/").pop(),r="/feeds/list/"+this.key+"/"+h+"/public/values?alt=";r+=e||s?"json":"json-in-script",this.query&&(r+="&sq="+this.query),this.orderby&&(r+="&orderby=column:"+this.orderby.toLowerCase()),this.reverse&&(r+="&reverse=true"),o.push(r)}for(this.sheetsToLoad=o.length,n=0,i=o.length;n<i;n++)this.requestData(o[n],this.loadSheet)},sheets:function(e){return"undefined"==typeof e?this.models:"undefined"==typeof this.models[e]?void 0:this.models[e]},sheetReady:function(e){this.models[e.name]=e,a(this.model_names,e.name)===-1&&this.model_names.push(e.name),this.sheetsToLoad--,0===this.sheetsToLoad&&this.doCallback()},loadSheet:function(e){var t=this;new h.Model({data:e,parseNumbers:this.parseNumbers,postProcess:this.postProcess,tabletop:this,prettyColumnNames:this.prettyColumnNames,onReady:function(){t.sheetReady(this)}})},doCallback:function(){0===this.sheetsToLoad&&this.callback.apply(this.callbackContext||this,[this.data(),this])},log:function(e){this.debug&&"undefined"!=typeof console&&"undefined"!=typeof console.log&&Function.prototype.apply.apply(console.log,[console,arguments])}},h.Model=function(e){var t,s,n,i;if(this.column_names=[],this.name=e.data.feed.title.$t,this.tabletop=e.tabletop,this.elements=[],this.onReady=e.onReady,this.raw=e.data,"undefined"==typeof e.data.feed.entry)return e.tabletop.log("Missing data for "+this.name+", make sure you didn't forget column headers"),this.original_columns=[],this.elements=[],void this.onReady.call(this);for(var o in e.data.feed.entry[0])/^gsx/.test(o)&&this.column_names.push(o.replace("gsx$",""));for(this.original_columns=this.column_names,t=0,n=e.data.feed.entry.length;t<n;t++){for(var a=e.data.feed.entry[t],h={},s=0,i=this.column_names.length;s<i;s++){var r=a["gsx$"+this.column_names[s]];"undefined"!=typeof r?e.parseNumbers&&""!==r.$t&&!isNaN(r.$t)?h[this.column_names[s]]=+r.$t:h[this.column_names[s]]=r.$t:h[this.column_names[s]]=""}void 0===h.rowNumber&&(h.rowNumber=t+1),e.postProcess&&e.postProcess(h),this.elements.push(h)}e.prettyColumnNames?this.fetchPrettyColumns():this.onReady.call(this)},h.Model.prototype={all:function(){return this.elements},fetchPrettyColumns:function(){if(!this.raw.feed.link[3])return this.ready();var e=this.raw.feed.link[3].href.replace("/feeds/list/","/feeds/cells/").replace("https://spreadsheets.google.com",""),t=this;this.tabletop.requestData(e,function(e){t.loadPrettyColumns(e)})},ready:function(){this.onReady.call(this)},loadPrettyColumns:function(e){for(var t={},s=this.column_names,n=0,i=s.length;n<i;n++)"undefined"!=typeof e.feed.entry[n].content.$t?t[s[n]]=e.feed.entry[n].content.$t:t[s[n]]=s[n];this.pretty_columns=t,this.prettifyElements(),this.ready()},prettifyElements:function(){var e,t,s,n,i,o=[],i=[];for(t=0,n=this.column_names.length;t<n;t++)i.push(this.pretty_columns[this.column_names[t]]);for(e=0,s=this.elements.length;e<s;e++){var a={};for(t=0,n=this.column_names.length;t<n;t++){var h=this.pretty_columns[this.column_names[t]];a[h]=this.elements[e][this.column_names[t]]}o.push(a)}this.elements=o,this.column_names=i},toArray:function(){var e,t,s,n,i=[];for(e=0,s=this.elements.length;e<s;e++){var o=[];for(t=0,n=this.column_names.length;t<n;t++)o.push(this.elements[e][this.column_names[t]]);i.push(o)}return i}},"undefined"!=typeof module&&module.exports?module.exports=h:"function"==typeof define&&define.amd?define(function(){return h}):window.Tabletop=h}();
+(function() {
+  "use strict";
+
+  var inNodeJS = false;
+  if (typeof process !== 'undefined' && !process.browser) {
+    inNodeJS = true;
+    var request = require('request'.trim()); //prevents browserify from bundling the module
+  }
+
+  var supportsCORS = false;
+  var inLegacyIE = false;
+  try {
+    var testXHR = new XMLHttpRequest();
+    if (typeof testXHR.withCredentials !== 'undefined') {
+      supportsCORS = true;
+    } else {
+      if ("XDomainRequest" in window) {
+        supportsCORS = true;
+        inLegacyIE = true;
+      }
+    }
+  } catch (e) { }
+
+  // Create a simple indexOf function for support
+  // of older browsers.  Uses native indexOf if 
+  // available.  Code similar to underscores.
+  // By making a separate function, instead of adding
+  // to the prototype, we will not break bad for loops
+  // in older browsers
+  var indexOfProto = Array.prototype.indexOf;
+  var ttIndexOf = function(array, item) {
+    var i = 0, l = array.length;
+    
+    if (indexOfProto && array.indexOf === indexOfProto) return array.indexOf(item);
+    for (; i < l; i++) if (array[i] === item) return i;
+    return -1;
+  };
+  
+  /*
+    Initialize with Tabletop.init( { key: '0AjAPaAU9MeLFdHUxTlJiVVRYNGRJQnRmSnQwTlpoUXc' } )
+      OR!
+    Initialize with Tabletop.init( { key: 'https://docs.google.com/spreadsheet/pub?hl=en_US&hl=en_US&key=0AjAPaAU9MeLFdHUxTlJiVVRYNGRJQnRmSnQwTlpoUXc&output=html&widget=true' } )
+      OR!
+    Initialize with Tabletop.init('0AjAPaAU9MeLFdHUxTlJiVVRYNGRJQnRmSnQwTlpoUXc')
+  */
+
+  var Tabletop = function(options) {
+    // Make sure Tabletop is being used as a constructor no matter what.
+    if(!this || !(this instanceof Tabletop)) {
+      return new Tabletop(options);
+    }
+    
+    if(typeof(options) === 'string') {
+      options = { key : options };
+    }
+
+    this.callback = options.callback;
+    this.wanted = options.wanted || [];
+    this.key = options.key;
+    this.simpleSheet = !!options.simpleSheet;
+    this.parseNumbers = !!options.parseNumbers;
+    this.wait = !!options.wait;
+    this.reverse = !!options.reverse;
+    this.postProcess = options.postProcess;
+    this.debug = !!options.debug;
+    this.query = options.query || '';
+    this.orderby = options.orderby;
+    this.endpoint = options.endpoint || "https://spreadsheets.google.com";
+    this.singleton = !!options.singleton;
+    this.simple_url = !!options.simple_url;
+    this.callbackContext = options.callbackContext;
+    // Default to on, unless there's a proxy, in which case it's default off
+    this.prettyColumnNames = typeof(options.prettyColumnNames) == 'undefined' ? !options.proxy : options.prettyColumnNames
+    
+    if(typeof(options.proxy) !== 'undefined') {
+      // Remove trailing slash, it will break the app
+      this.endpoint = options.proxy.replace(/\/$/,'');
+      this.simple_url = true;
+      this.singleton = true;
+      // Let's only use CORS (straight JSON request) when
+      // fetching straight from Google
+      supportsCORS = false;
+    }
+    
+    this.parameterize = options.parameterize || false;
+    
+    if(this.singleton) {
+      if(typeof(Tabletop.singleton) !== 'undefined') {
+        this.log("WARNING! Tabletop singleton already defined");
+      }
+      Tabletop.singleton = this;
+    }
+    
+    /* Be friendly about what you accept */
+    if(/key=/.test(this.key)) {
+      this.log("You passed an old Google Docs url as the key! Attempting to parse.");
+      this.key = this.key.match("key=(.*?)(&|#|$)")[1];
+    }
+
+    if(/pubhtml/.test(this.key)) {
+      this.log("You passed a new Google Spreadsheets url as the key! Attempting to parse.");
+      this.key = this.key.match("d\\/(.*?)\\/pubhtml")[1];
+    }
+
+    if(!this.key) {
+      this.log("You need to pass Tabletop a key!");
+      return;
+    }
+
+    this.log("Initializing with key " + this.key);
+
+    this.models = {};
+    this.model_names = [];
+
+    this.base_json_path = "/feeds/worksheets/" + this.key + "/public/basic?alt=";
+
+    if (inNodeJS || supportsCORS) {
+      this.base_json_path += 'json';
+    } else {
+      this.base_json_path += 'json-in-script';
+    }
+    
+    if(!this.wait) {
+      this.fetch();
+    }
+  };
+
+  // A global storage for callbacks.
+  Tabletop.callbacks = {};
+
+  // Backwards compatibility.
+  Tabletop.init = function(options) {
+    return new Tabletop(options);
+  };
+
+  Tabletop.sheets = function() {
+    this.log("Times have changed! You'll want to use var tabletop = Tabletop.init(...); tabletop.sheets(...); instead of Tabletop.sheets(...)");
+  };
+
+  Tabletop.prototype = {
+
+    fetch: function(callback) {
+      if(typeof(callback) !== "undefined") {
+        this.callback = callback;
+      }
+      this.requestData(this.base_json_path, this.loadSheets);
+    },
+    
+    /*
+      This will call the environment appropriate request method.
+      
+      In browser it will use JSON-P, in node it will use request()
+    */
+    requestData: function(path, callback) {
+      if (inNodeJS) {
+        this.serverSideFetch(path, callback);
+      } else {
+        //CORS only works in IE8/9 across the same protocol
+        //You must have your server on HTTPS to talk to Google, or it'll fall back on injection
+        var protocol = this.endpoint.split("//").shift() || "http";
+        if (supportsCORS && (!inLegacyIE || protocol === location.protocol)) {
+          this.xhrFetch(path, callback);
+        } else {
+          this.injectScript(path, callback);
+        }
+      }
+    },
+
+    /*
+      Use Cross-Origin XMLHttpRequest to get the data in browsers that support it.
+    */
+    xhrFetch: function(path, callback) {
+      //support IE8's separate cross-domain object
+      var xhr = inLegacyIE ? new XDomainRequest() : new XMLHttpRequest();
+      xhr.open("GET", this.endpoint + path);
+      var self = this;
+      xhr.onload = function() {
+        try {
+          var json = JSON.parse(xhr.responseText);
+        } catch (e) {
+          console.error(e);
+        }
+        callback.call(self, json);
+      };
+      xhr.send();
+    },
+    
+    /*
+      Insert the URL into the page as a script tag. Once it's loaded the spreadsheet data
+      it triggers the callback. This helps you avoid cross-domain errors
+      http://code.google.com/apis/gdata/samples/spreadsheet_sample.html
+
+      Let's be plain-Jane and not use jQuery or anything.
+    */
+    injectScript: function(path, callback) {
+      var script = document.createElement('script');
+      var callbackName;
+      
+      if(this.singleton) {
+        if(callback === this.loadSheets) {
+          callbackName = 'Tabletop.singleton.loadSheets';
+        } else if (callback === this.loadSheet) {
+          callbackName = 'Tabletop.singleton.loadSheet';
+        }
+      } else {
+        var self = this;
+        callbackName = 'tt' + (+new Date()) + (Math.floor(Math.random()*100000));
+        // Create a temp callback which will get removed once it has executed,
+        // this allows multiple instances of Tabletop to coexist.
+        Tabletop.callbacks[ callbackName ] = function () {
+          var args = Array.prototype.slice.call( arguments, 0 );
+          callback.apply(self, args);
+          script.parentNode.removeChild(script);
+          delete Tabletop.callbacks[callbackName];
+        };
+        callbackName = 'Tabletop.callbacks.' + callbackName;
+      }
+      
+      var url = path + "&callback=" + callbackName;
+      
+      if(this.simple_url) {
+        // We've gone down a rabbit hole of passing injectScript the path, so let's
+        // just pull the sheet_id out of the path like the least efficient worker bees
+        if(path.indexOf("/list/") !== -1) {
+          script.src = this.endpoint + "/" + this.key + "-" + path.split("/")[4];
+        } else {
+          script.src = this.endpoint + "/" + this.key;
+        }
+      } else {
+        script.src = this.endpoint + url;
+      }
+      
+      if (this.parameterize) {
+        script.src = this.parameterize + encodeURIComponent(script.src);
+      }
+      
+      document.getElementsByTagName('script')[0].parentNode.appendChild(script);
+    },
+    
+    /* 
+      This will only run if tabletop is being run in node.js
+    */
+    serverSideFetch: function(path, callback) {
+      var self = this
+      request({url: this.endpoint + path, json: true}, function(err, resp, body) {
+        if (err) {
+          return console.error(err);
+        }
+        callback.call(self, body);
+      });
+    },
+
+    /* 
+      Is this a sheet you want to pull?
+      If { wanted: ["Sheet1"] } has been specified, only Sheet1 is imported
+      Pulls all sheets if none are specified
+    */
+    isWanted: function(sheetName) {
+      if(this.wanted.length === 0) {
+        return true;
+      } else {
+        return (ttIndexOf(this.wanted, sheetName) !== -1);
+      }
+    },
+    
+    /*
+      What gets send to the callback
+      if simpleSheet === true, then don't return an array of Tabletop.this.models,
+      only return the first one's elements
+    */
+    data: function() {
+      // If the instance is being queried before the data's been fetched
+      // then return undefined.
+      if(this.model_names.length === 0) {
+        return undefined;
+      }
+      if(this.simpleSheet) {
+        if(this.model_names.length > 1 && this.debug) {
+          this.log("WARNING You have more than one sheet but are using simple sheet mode! Don't blame me when something goes wrong.");
+        }
+        return this.models[ this.model_names[0] ].all();
+      } else {
+        return this.models;
+      }
+    },
+
+    /*
+      Add another sheet to the wanted list
+    */
+    addWanted: function(sheet) {
+      if(ttIndexOf(this.wanted, sheet) === -1) {
+        this.wanted.push(sheet);
+      }
+    },
+    
+    /*
+      Load all worksheets of the spreadsheet, turning each into a Tabletop Model.
+      Need to use injectScript because the worksheet view that you're working from
+      doesn't actually include the data. The list-based feed (/feeds/list/key..) does, though.
+      Calls back to loadSheet in order to get the real work done.
+
+      Used as a callback for the worksheet-based JSON
+    */
+    loadSheets: function(data) {
+      var i, ilen;
+      var toLoad = [];
+      this.googleSheetName = data.feed.title.$t;
+      this.foundSheetNames = [];
+
+      for(i = 0, ilen = data.feed.entry.length; i < ilen ; i++) {
+        this.foundSheetNames.push(data.feed.entry[i].title.$t);
+        // Only pull in desired sheets to reduce loading
+        if( this.isWanted(data.feed.entry[i].content.$t) ) {
+          var linkIdx = data.feed.entry[i].link.length-1;
+          var sheet_id = data.feed.entry[i].link[linkIdx].href.split('/').pop();
+          var json_path = "/feeds/list/" + this.key + "/" + sheet_id + "/public/values?alt="
+          if (inNodeJS || supportsCORS) {
+            json_path += 'json';
+          } else {
+            json_path += 'json-in-script';
+          }
+          if(this.query) {
+            json_path += "&sq=" + this.query;
+          }
+          if(this.orderby) {
+            json_path += "&orderby=column:" + this.orderby.toLowerCase();
+          }
+          if(this.reverse) {
+            json_path += "&reverse=true";
+          }
+          toLoad.push(json_path);
+        }
+      }
+
+      this.sheetsToLoad = toLoad.length;
+      for(i = 0, ilen = toLoad.length; i < ilen; i++) {
+        this.requestData(toLoad[i], this.loadSheet);
+      }
+    },
+
+    /*
+      Access layer for the this.models
+      .sheets() gets you all of the sheets
+      .sheets('Sheet1') gets you the sheet named Sheet1
+    */
+    sheets: function(sheetName) {
+      if(typeof sheetName === "undefined") {
+        return this.models;
+      } else {
+        if(typeof(this.models[ sheetName ]) === "undefined") {
+          // alert( "Can't find " + sheetName );
+          return;
+        } else {
+          return this.models[ sheetName ];
+        }
+      }
+    },
+
+    sheetReady: function(model) {
+      this.models[ model.name ] = model;
+      if(ttIndexOf(this.model_names, model.name) === -1) {
+        this.model_names.push(model.name);
+      }
+
+      this.sheetsToLoad--;
+      if(this.sheetsToLoad === 0)
+        this.doCallback();
+    },
+    
+    /*
+      Parse a single list-based worksheet, turning it into a Tabletop Model
+
+      Used as a callback for the list-based JSON
+    */
+    loadSheet: function(data) {
+      var that = this;
+      var model = new Tabletop.Model( { data: data, 
+                                        parseNumbers: this.parseNumbers,
+                                        postProcess: this.postProcess,
+                                        tabletop: this,
+                                        prettyColumnNames: this.prettyColumnNames,
+                                        onReady: function() {
+                                          that.sheetReady(this);
+                                        } } );
+    },
+
+    /*
+      Execute the callback upon loading! Rely on this.data() because you might
+        only request certain pieces of data (i.e. simpleSheet mode)
+      Tests this.sheetsToLoad just in case a race condition happens to show up
+    */
+    doCallback: function() {
+      if(this.sheetsToLoad === 0) {
+        this.callback.apply(this.callbackContext || this, [this.data(), this]);
+      }
+    },
+
+    log: function(msg) {
+      if(this.debug) {
+        if(typeof console !== "undefined" && typeof console.log !== "undefined") {
+          Function.prototype.apply.apply(console.log, [console, arguments]);
+        }
+      }
+    }
+
+  };
+
+  /*
+    Tabletop.Model stores the attribute names and parses the worksheet data
+      to turn it into something worthwhile
+
+    Options should be in the format { data: XXX }, with XXX being the list-based worksheet
+  */
+  Tabletop.Model = function(options) {
+    var i, j, ilen, jlen;
+    this.column_names = [];
+    this.name = options.data.feed.title.$t;
+    this.tabletop = options.tabletop;
+    this.elements = [];
+    this.onReady = options.onReady;
+    this.raw = options.data; // A copy of the sheet's raw data, for accessing minutiae
+
+    if(typeof(options.data.feed.entry) === 'undefined') {
+      options.tabletop.log("Missing data for " + this.name + ", make sure you didn't forget column headers");
+      this.original_columns = [];
+      this.elements = [];
+      this.onReady.call(this);
+      return;
+    }
+    
+    for(var key in options.data.feed.entry[0]){
+      if(/^gsx/.test(key))
+        this.column_names.push( key.replace("gsx$","") );
+    }
+
+    this.original_columns = this.column_names;
+    
+    for(i = 0, ilen =  options.data.feed.entry.length ; i < ilen; i++) {
+      var source = options.data.feed.entry[i];
+      var element = {};
+      for(var j = 0, jlen = this.column_names.length; j < jlen ; j++) {
+        var cell = source[ "gsx$" + this.column_names[j] ];
+        if (typeof(cell) !== 'undefined') {
+          if(options.parseNumbers && cell.$t !== '' && !isNaN(cell.$t))
+            element[ this.column_names[j] ] = +cell.$t;
+          else
+            element[ this.column_names[j] ] = cell.$t;
+        } else {
+            element[ this.column_names[j] ] = '';
+        }
+      }
+      if(element.rowNumber === undefined)
+        element.rowNumber = i + 1;
+      if( options.postProcess )
+        options.postProcess(element);
+      this.elements.push(element);
+    }
+    
+    if(options.prettyColumnNames)
+      this.fetchPrettyColumns();
+    else
+      this.onReady.call(this);
+  };
+
+  Tabletop.Model.prototype = {
+    /*
+      Returns all of the elements (rows) of the worksheet as objects
+    */
+    all: function() {
+      return this.elements;
+    },
+    
+    fetchPrettyColumns: function() {
+      if(!this.raw.feed.link[3])
+        return this.ready();
+      var cellurl = this.raw.feed.link[3].href.replace('/feeds/list/', '/feeds/cells/').replace('https://spreadsheets.google.com', '');
+      var that = this;
+      this.tabletop.requestData(cellurl, function(data) {
+        that.loadPrettyColumns(data)
+      });
+    },
+    
+    ready: function() {
+      this.onReady.call(this);
+    },
+    
+    /*
+     * Store column names as an object
+     * with keys of Google-formatted "columnName"
+     * and values of human-readable "Column name"
+     */
+    loadPrettyColumns: function(data) {
+      var pretty_columns = {};
+
+      var column_names = this.column_names;
+
+      var i = 0;
+      var l = column_names.length;
+
+      for (; i < l; i++) {
+        if (typeof data.feed.entry[i].content.$t !== 'undefined') {
+          pretty_columns[column_names[i]] = data.feed.entry[i].content.$t;
+        } else {
+          pretty_columns[column_names[i]] = column_names[i];
+        }
+      }
+
+      this.pretty_columns = pretty_columns;
+
+      this.prettifyElements();
+      this.ready();
+    },
+    
+    /*
+     * Go through each row, substitutiting
+     * Google-formatted "columnName"
+     * with human-readable "Column name"
+     */
+    prettifyElements: function() {
+      var pretty_elements = [],
+          ordered_pretty_names = [],
+          i, j, ilen, jlen;
+
+      var ordered_pretty_names;
+      for(j = 0, jlen = this.column_names.length; j < jlen ; j++) {
+        ordered_pretty_names.push(this.pretty_columns[this.column_names[j]]);
+      }
+
+      for(i = 0, ilen = this.elements.length; i < ilen; i++) {
+        var new_element = {};
+        for(j = 0, jlen = this.column_names.length; j < jlen ; j++) {
+          var new_column_name = this.pretty_columns[this.column_names[j]];
+          new_element[new_column_name] = this.elements[i][this.column_names[j]];
+        }
+        pretty_elements.push(new_element);
+      }
+      this.elements = pretty_elements;
+      this.column_names = ordered_pretty_names;
+    },
+
+    /*
+      Return the elements as an array of arrays, instead of an array of objects
+    */
+    toArray: function() {
+      var array = [],
+          i, j, ilen, jlen;
+      for(i = 0, ilen = this.elements.length; i < ilen; i++) {
+        var row = [];
+        for(j = 0, jlen = this.column_names.length; j < jlen ; j++) {
+          row.push( this.elements[i][ this.column_names[j] ] );
+        }
+        array.push(row);
+      }
+      return array;
+    }
+  };
+
+  if(typeof module !== "undefined" && module.exports) { //don't just use inNodeJS, we may be in Browserify
+    module.exports = Tabletop;
+  } else if (typeof define === 'function' && define.amd) {
+    define(function () {
+        return Tabletop;
+    });
+  } else {
+    window.Tabletop = Tabletop;
+  }
+
+})();
