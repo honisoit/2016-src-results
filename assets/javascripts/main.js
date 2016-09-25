@@ -24,6 +24,9 @@ var honiData = [{"name":"Time","primaryVote":500,"preferenceVote":-500,"finalVot
 {"name":"Wet","primaryVote":600,"preferenceVote":400,"finalVote":1000,"colorPreferences":"#ffcc33","colorPrimary":"#99cccc"},
 {"name":"Sin","primaryVote":700,"preferenceVote":100,"finalVote":800,"colorPreferences":"#ffcc33","colorPrimary":"#cc99ff"},
 {"name":"Informal","primaryVote":50,"preferenceVote":0,"finalVote":50,"colorPreferences":"#ffcc33","colorPrimary":"#999"}];
+var councilData = {};
+var councilElected = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];
+var councilSeats = [{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];
 
 var tabletopInit = function tabletopInit() {
   Tabletop.init({
@@ -34,7 +37,6 @@ var tabletopInit = function tabletopInit() {
 };
 
 var processData = function processData(data, tabletop) {
-  rawData = data;
   constants = data.constants.elements['0'];
   updatesData = data.updates.elements;
   updatesData = updatesData.reverse();
@@ -42,6 +44,14 @@ var processData = function processData(data, tabletop) {
   honiPrimaryData = data.honiprimary.elements;
   honiPreferenceData = data.honipreferences.elements;
   honiTotalsData = data.honitotals.elements;
+  councilData = data.council.elements;
+  councilElected = councilData.filter(function(candidate) {
+    if (candidate.elected === '1') {
+      return true;
+    } else {
+      return false;
+    };
+  });
 
   update();
 };
@@ -68,6 +78,18 @@ var copyUpdate = function copyUpdate() {
   d3.select('.js-honi-footnotes').html(constants.honiFootnotes);
   d3.select('.js-honi-primary-analysis').html(constants.honiPrimaryAnalysis);
   d3.select('.js-honi-preference-analysis').html(constants.honiPreferenceAnalysis);
+
+  // Council
+  d3.select('.js-council-standfirst').html(constants.councilStandfirst);
+  d3.select('.js-council-footnotes').html(constants.councilFootnotes);
+  d3.select('.js-council-quota').text(constants.councilQuota);
+  d3.select('.js-council-turnout').text(constants.councilTurnout);
+
+  // NUS
+  d3.select('.js-nus-standfirst').html(constants.nusStandfirst);
+  d3.select('.js-nus-footnotes').html(constants.nusFootnotes);
+  d3.select('.js-nus-quota').text(constants.nusQuota);
+  d3.select('.js-nus-turnout').text(constants.nusTurnout);
 };
 
 /**
@@ -276,7 +298,6 @@ var honiPrimaryInit = function honiPrimaryInit() {
  */
 
 var honiPreferences = d3.select('.js-honi-preferences').append('svg');
-var honiPreferencesMidline = honiPreferences.append('line');
 
 var honiPreferencesInit = function honiPreferencesInit() {
    var honiSummaryWidth = $('.js-content-results').width();
@@ -316,7 +337,7 @@ var honiPreferencesInit = function honiPreferencesInit() {
      .attr('transform', function() { return 'translate(0,' + honiSummaryRowSpace + ')'; })
      .attr('fill', function(d,i) { return d.hex; });
 
-   honiPreferencesMidline
+   var honiPreferencesMidline = honiPreferences.append('line')
      .attr('x1', honiSummaryWidth/2)
      .attr('y1', 0)
      .attr('x2', honiSummaryWidth/2)
@@ -352,7 +373,6 @@ var honiPrimaryTableUpdate = function honiPrimaryTableUpdate() {
    }).enter()
    .append('td')
    .text(function(d) { return d; });
-
 };
 
 /**
@@ -413,6 +433,174 @@ var honiTotalsTableUpdate = function honiTotalsTableUpdate() {
    .append('td')
    .text(function(d) { return d; });
 
+};
+
+/**
+ * Council summary
+ */
+var councilSummary = d3.select('.js-council-summary').append('svg');
+var councilPadding = 6;
+var councilRows = 3;
+var councilColumns = 11;
+
+var councilSummaryInit = function councilSummaryInit() {
+  var councilWidth = $('.js-content-results').width();
+  var councilSeatDiameter = (councilWidth - (12 * councilPadding)) / 11;
+  var councilHeight = (councilRows * councilSeatDiameter) + (5 * councilPadding);
+
+  councilSummary
+    .attr('width', councilWidth)
+    .attr('height', councilHeight);
+
+  var councilSeats = councilSummary.append('g')
+    .selectAll('circle')
+    .data([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+  .enter()
+    .append('circle')
+    .attr('cx', councilSeatDiameter/2)
+    .attr('cy', councilSeatDiameter/2)
+    .attr('r', councilSeatDiameter/2)
+    .attr('transform', function(d, i) {
+      var xPosition = Math.ceil((i+1) / councilRows);
+      var xOffset = ((xPosition - 1) * (councilSeatDiameter + councilPadding)) + councilPadding;
+      var yPosition = (i) % 3;
+      var yOffset = (yPosition * (councilPadding + councilSeatDiameter)) + councilPadding;
+      return 'translate(' + xOffset + ',' + yOffset + ')';
+    })
+    .attr('stroke-width', 1.5)
+    .attr('stroke', 'black')
+    .attr('fill', 'none');
+};
+
+var councilSummaryUpdate = function councilSummaryUpdate() {
+  var councilWidth = $('.js-content-results').width();
+  var councilSeatDiameter = (councilWidth - (12 * councilPadding)) / 11;
+  var councilHeight = (councilRows * councilSeatDiameter) + (5 * councilPadding);
+
+  councilSummary
+    .attr('width', councilWidth)
+    .attr('height', councilHeight)
+    .html('');
+
+
+
+  var councilCandidates = councilSummary.append('g')
+    .selectAll('circle')
+  .data(councilElected).enter()
+    .append('circle')
+    .attr('cx', councilSeatDiameter/2)
+    .attr('cy', councilSeatDiameter/2)
+    .attr('r', councilSeatDiameter/2)
+    .attr('transform', function(d, i) {
+      var xPosition = Math.ceil((i+1) / councilRows);
+      var xOffset = ((xPosition - 1) * (councilSeatDiameter + councilPadding)) + councilPadding;
+      var yPosition = (i) % 3;
+      var yOffset = (yPosition * (councilPadding + councilSeatDiameter)) + councilPadding;
+      return 'translate(' + xOffset + ',' + yOffset + ')';
+    })
+    .attr('fill', function(d) {
+      return constants[d.shortFaction];
+    })
+    .on('click', function(d, i) {
+      d3.select('.js-council-profile-name').text(d.name);
+      d3.select('.js-council-profile-meta').text(d.ticket + ' • ' + d.faction);
+      d3.select('.js-council-profile-votes').text('Elected with ' + d.currentVote + ' votes.');
+    });
+
+  var councilSeats = councilSummary.append('g')
+    .selectAll('circle')
+    .data([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])
+  .enter()
+    .append('circle')
+    .attr('cx', councilSeatDiameter/2)
+    .attr('cy', councilSeatDiameter/2)
+    .attr('r', councilSeatDiameter/2)
+    .attr('transform', function(d, i) {
+      var xPosition = Math.ceil((i+1) / councilRows);
+      var xOffset = ((xPosition - 1) * (councilSeatDiameter + councilPadding)) + councilPadding;
+      var yPosition = (i) % 3;
+      var yOffset = (yPosition * (councilPadding + councilSeatDiameter)) + councilPadding;
+      return 'translate(' + xOffset + ',' + yOffset + ')';
+    })
+    .attr('stroke-width', 1.5)
+    .attr('stroke', 'black')
+    .attr('fill', 'none');
+};
+
+/**
+ * Council table update
+ */
+
+var councilSortedDescending = false;
+
+var councilTableUpdate = function councilTableUpdate(data) {
+  var wipeTableContents = d3.select('.js-council-table').html('');
+
+  var table = d3.select('.js-council-table').append('table').classed('table', true);
+
+  var tableHeader = table.append('thead').classed('table__header', true)
+   .selectAll('td')
+   .data(["Position", "name", "ticket", "faction", "primaryVote", "currentVote"]).enter()
+   .append('th')
+   .text(function(d) {
+     return d;
+   })
+   .on('click', function(d) {
+     console.log(d);
+     sortedCouncilData = councilData.sort(function(a, b){
+        var stringHeaders = ["name", "ticket", "faction"];
+        if (stringHeaders.indexOf(d) != -1) {
+          // Sort with the alphabet
+          var nameA=a[d].toLowerCase(), nameB=b[d].toLowerCase();
+          if (councilSortedDescending === true) {
+            //sort string ascending
+            if (nameA < nameB) {
+              return -1;
+            } if (nameA > nameB) {
+              return 1;
+            } else {
+              return 0;
+            };
+          } else {
+            //sort string descending
+            if (nameA > nameB) {
+              return -1;
+            } if (nameA < nameB) {
+              return 1;
+            } else {
+              return 0;
+            };
+          };
+        } else {
+          // Sort as numbers
+          if (councilSortedDescending === true) {
+            //sort numbers ascending
+            return b[d] - a[d];
+          } else {
+            //sort numbers descending
+            return a[d] - b[d];
+          };
+        };
+     });
+     if (councilSortedDescending === true) {
+       councilSortedDescending = false;
+     } else {
+       councilSortedDescending = true;
+     };
+     councilTableUpdate(sortedCouncilData);
+   });
+
+  var tableRows = table.selectAll('tr')
+   .data(data).enter()
+   .append('tr')
+   .classed('table__row', true);
+
+  var tableCells = tableRows.selectAll('td')
+    .data(function(d) {
+      return d3.values(d);
+    }).enter()
+    .append('td')
+    .text(function(d) { return d; });
 };
 
 /**
@@ -479,6 +667,7 @@ var init = function init() {
   presTableUpdate();
   honiPrimaryInit();
   honiPreferencesInit();
+  councilSummaryInit();
   tabletopInit();
   pymChild.sendHeight()
 };
@@ -496,6 +685,10 @@ var update = function update() {
   honiPrimaryTableUpdate();
   honiPreferenceTableUpdate();
   honiTotalsTableUpdate();
+
+  // council
+  councilTableUpdate(councilData);
+  councilSummaryUpdate();
 
   // general
   updatesUpdate();

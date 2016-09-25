@@ -1,0 +1,45 @@
+.nus__analysis {
+  margin-top: $baseline;
+  //@include outer-container();
+  display: flex;
+}
+
+.nus__meta {
+  flex: 1 1 25%;
+  //@include md-columns(6);
+  //@include lg-columns(3);
+}
+
+.nus__standfirst {
+  flex: 1 1 75%;
+  //@include md-columns(6);
+  //@include lg-columns(9);
+}
+
+.nus__graphic {
+  margin-top: $baseline;
+}
+
+.nus__title {
+  @include section-title;
+}
+
+.nus__subtitle {
+  display: block;
+  font-weight: bold;
+  font-family: $font-family-sans-serif;
+  margin: $baseline 0 $baseline/2;
+  padding: 0;
+  font-size: $fontsize2;
+}
+
+.nus__table {
+  overflow-x: scroll;
+}
+.nus__footnotes {
+  @include small-text;
+  margin-top: $baseline;
+  border-top: 1px solid $brand-grey;
+  margin-top: $baseline;
+  padding-top: $baseline/2;
+}

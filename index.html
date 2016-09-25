@@ -30,9 +30,11 @@
       <ul class="tabs" role="tablist">
         <li role="presentation" class="tabs__tab tabs__tab--current" data-tab="js-tab-pres">President</li>
         <li role="presentation" class="tabs__tab" data-tab="js-tab-honi">Honi Soit</li>
+        <li role="presentation" class="tabs__tab" data-tab="js-tab-council">Council</li>
+        <li role="presentation" class="tabs__tab" data-tab="js-tab-nus">NUS</li>
       </ul>
 
-      <div role="tabpanel" id="js-tab-pres" class="tabs__content tabs__content--current pres" id="home">
+      <div role="tabpanel" id="js-tab-pres" class="tabs__content tabs__content--current pres">
         <div class="pres__candidates">
           <div class="pres__candidate">
               <div class="pres__candidate-copy pres__candidate-copy--left">
@@ -78,7 +80,7 @@
         </div>
       </div>
 
-      <div role="tabpanel" id="js-tab-honi" class="tabs__content honi" id="profile">
+      <div role="tabpanel" id="js-tab-honi" class="tabs__content honi">
         <h1 class="honi__title">WET wins Honi</h1>
         <div class="honi__analysis">
           <div class="honi__meta meta">
@@ -110,6 +112,54 @@
         <div class="honi__footnotes js-honi-footnotes">
           <p>Loading...</p>
         </div>
+      </div>
+
+      <div role="tabpanel" id="js-tab-council" class="tabs__content council">
+        <h5 class="council__subtitle">Select a candidate to see who has been elected:</h5>
+        <div class="council__seats js-council-summary"></div>
+        <div class="council__profile profile">
+          <h1 class="profile__name js-council-profile-name">–</h1>
+          <p class="profile__meta js-council-profile-meta">–</p>
+          <p class="profile__votes js-council-profile-votes">–</p>
+        </div>
+        <div class="council__analysis">
+          <div class="council__meta meta">
+            <span class="meta__booths js-council-quota">0</span>
+            <span class="meta__smalltext">votes are required for election</span>
+            <span class="meta__turnout js-council-turnout">0%</span>
+            <span class="meta__smalltext">of students voted</span>
+          </div>
+          <div class="council__standfirst js-council-standfirst">
+            <p>Loading...</p>
+          </div>
+        </div>
+
+        <div class="council__table js-council-table"></div>
+
+        <div class="council__footnotes js-council-footnotes">
+          <p>Loading...</p>
+        </div>
+      </div>
+
+      <div role="tabpanel" id="js-tab-nus" class="tabs__content nus">
+        <div class="nus__analysis">
+          <div class="nus__meta meta">
+            <span class="meta__booths js-nus-quota">0</span>
+            <span class="meta__smalltext">votes are required for election</span>
+            <span class="meta__turnout js-nus-turnout">0%</span>
+            <span class="meta__smalltext">of students voted</span>
+          </div>
+          <div class="nus__standfirst js-nus-standfirst">
+            <p>Loading...</p>
+          </div>
+        </div>
+
+        <div class="council__table js-nus-table"></div>
+
+        <div class="council__footnotes js-nus-footnotes">
+          <p>Loading...</p>
+        </div>
+      </div>
       </div>
     </div>
     <div class="content__updates updates">
