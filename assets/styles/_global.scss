@@ -72,7 +72,7 @@ a {
     float:left;
     width: 49%;
     margin-right: $baseline/2;
-    display: block;
+    display: inline-block;
   }
 }
 
@@ -84,7 +84,7 @@ a {
     //flex: 0 1 50%;
     float: right;
     width: 49%;
-    display: block;
+    display: inline-block;
     margin-left: $baseline/2;
     margin-top: 0;
   }
