@@ -1,0 +1,20 @@
+.profile {
+  background-color: $brand-grey-light;
+  text-align: center;
+  padding: $baseline/2;
+  margin-right: $baseline/2;
+
+}
+
+.profile__name {
+  @include section-title;
+  border-bottom: 0;
+  margin: 0;
+}
+
+.profile__meta,
+.profile__votes {
+  font-size: $fontsize1;
+  font-family: $font-family-sans-serif;
+  margin-bottom: $baseline/4;
+}
