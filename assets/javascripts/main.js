@@ -56,7 +56,6 @@ var processData = function processData(data, tabletop) {
   });
   councilTableData = councilData.slice().map(function(candidate) {
     var rebuiltCandidate = {};
-    rebuiltCandidate['Position'] = candidate.Position;
     rebuiltCandidate['name'] = candidate.name;
     rebuiltCandidate['ticket'] = candidate.ticket;
     rebuiltCandidate['faction'] = candidate.faction;
@@ -75,7 +74,6 @@ var processData = function processData(data, tabletop) {
   });
   nusTableData = nusData.slice().map(function(candidate) {
     var rebuiltCandidate = {};
-    rebuiltCandidate['Position'] = candidate.Position;
     rebuiltCandidate['name'] = candidate.name;
     rebuiltCandidate['ticket'] = candidate.ticket;
     rebuiltCandidate['faction'] = candidate.faction;
@@ -569,7 +567,7 @@ var councilTableUpdate = function councilTableUpdate(data) {
 
   var tableHeader = table.append('thead').classed('table__header', true)
    .selectAll('td')
-   .data(["Position", "name", "ticket", "faction", "primaryVote", "currentVote"]).enter()
+   .data(["name", "ticket", "faction", "primaryVote", "currentVote"]).enter()
    .append('th')
    .text(function(d) {
      return d;
@@ -731,7 +729,7 @@ var nusTableUpdate = function nusTableUpdate(data) {
 
   var tableHeader = table.append('thead').classed('table__header', true)
    .selectAll('td')
-   .data(["Position", "name", "ticket", "faction", "primaryVote", "currentVote"]).enter()
+   .data(["name", "ticket", "faction", "primaryVote", "currentVote"]).enter()
    .append('th')
    .text(function(d) {
      return d;
