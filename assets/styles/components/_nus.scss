@@ -16,7 +16,8 @@
   //@include lg-columns(9);
 }
 
-.nus__graphic {
+.nus__graphic,
+.nus__table {
   margin-top: $baseline;
 }
 
@@ -25,12 +26,12 @@
 }
 
 .nus__subtitle {
-  display: block;
-  font-weight: bold;
-  font-family: $font-family-sans-serif;
-  margin: $baseline 0 $baseline/2;
-  padding: 0;
-  font-size: $fontsize2;
+//  display: block;
+//  font-weight: bold;
+//  font-family: $font-family-sans-serif;
+  margin: $baseline 0 $baseline;
+//  padding: 0;
+//  font-size: $fontsize2;
 }
 
 .nus__table {
